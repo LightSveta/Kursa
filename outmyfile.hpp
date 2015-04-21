@@ -3,9 +3,6 @@
 
 #include <iostream>
 #include <stdio.h>
-
-
-const int SIZE = 100;//общее число поступивших команд
 /*
 void WriteResult(int Number, int Time)//  для создания результата выполнения...
 {
@@ -14,8 +11,6 @@ void WriteResult(int Number, int Time)//  для создания результата выполнения...
 	fclose(file);
 }
 */
-
-
 void ReadAllFile(int **ALL)//для удобства данные переносятся из тхт файла в массив
 {
 	int a, n;
@@ -25,7 +20,7 @@ void ReadAllFile(int **ALL)//для удобства данные переносятся из тхт файла в масс
 		for (int i = 0; i < SIZE; i++)
 		{
 			fscanf(file, "%d %d ", &a, &n);
-			std::cout << a << " " << n << " ";
+			//std::cout << a << " " << n << " ";
 		ALL [i]= new int [2+(1+2*n)];
 			ALL[i][0] = a;
 			ALL[i][1] = n;
@@ -33,10 +28,10 @@ void ReadAllFile(int **ALL)//для удобства данные переносятся из тхт файла в масс
 			{
 				fscanf(file, "%d ", &a);
 				ALL[i][j] = a;
-				std::cout << a << " ";
+				//std::cout << a << " ";
 			}
 		fscanf(file, "\n");
-		std::cout << std::endl;
+		//std::cout << std::endl;
 		}
 	fclose(file);
 }

@@ -1,4 +1,4 @@
-//#include "createfile.hpp"
+#include "createfile.hpp"
 
 #include "fcfo.hpp"
 #include "RR.hpp"
@@ -12,18 +12,14 @@ using namespace std;
 
 
 const int ONE_TAKT = 600;// размер 1 такта в пико-секундах=600при частоте 1.8 √√ерц(подсчеты в листке)
-
-
 int ** ALL_COMMANDS = new int *[SIZE];//в этом массиве хранитс€ все о командах
-
-
 
 void main()
 {
-	//WriteFile();//создать файл #include "createfile.hpp"
+	//WriteFile();//создать файл
 	
 	ReadAllFile(ALL_COMMANDS);//заполн€ет массив ALL_COMMANDS[size][ALL_COMMANDS[i][1]]
-	
+	/*
 	//пример дл€ вывода всего содержимого ALL_COMMANDS[][]
 	for (int i = 0; i < SIZE; i++)
 	{
@@ -33,29 +29,30 @@ void main()
 		}
 		cout << endl;
 	}
+*/		
+	//врем€ затраченное на все команды по пор€дку (покане выполнитс€ следующа€ не начнетс€ выполн€тьс€)
+	int MAXtime = 0;
+	for (int i = 0; i < SIZE; i++)
+		for (int j = 2; j < 2 + (1 + 2 * ALL_COMMANDS[i][1]); j++)
+			MAXtime += ALL_COMMANDS[i][j];
+	cout << "MAXtime=" << MAXtime << "taktov \n";
+	//больше MAXtime не должно получитьс€ в результате вычислений алгоритмов
+
+	function_FCFO(ALL_COMMANDS);
+
+	ReadAllFile(ALL_COMMANDS);
+	function_RR();
+
+	ReadAllFile(ALL_COMMANDS);
+	function_SJN();
 	
+	ReadAllFile(ALL_COMMANDS); 
+	function_SRT();
 
-	function_FCFO();
-
-
-
-	//int s;
-	//s=ReadOneElement(1);
-	//cout<<s;
-
-	/*
-	int a=999999, b=888888;
-	ReadOneLine(5, a, b);
-	cout<<a<<" "<<b<<endl;
-	*/
-
-	/*
-	for (int i = 0; i<100; i++)
-	for (int j = 0; j<2; j++)
-	WriteResult(i, j);
-	*/
-	//WriteResult(0, 145 );
-	//WriteResult(3, 17 );
-	//WriteResult(3, 345 );
+//----------------------------------
+	for (int i = 0; i < SIZE; i++)
+			delete [] ALL_COMMANDS[i];
+	delete [] ALL_COMMANDS;
+	
 
 }
