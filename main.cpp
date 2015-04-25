@@ -40,6 +40,8 @@ void main()
 	//меньше Xtime не должно получиться в результате вычислений алгоритмов
 	//здесь не учитывается то, что поступившие команды ждут своей очереди
 
+	function_FCFO_(ALL_COMMANDS);
+
 	function_FCFO(ALL_COMMANDS);
 
 	ReadAllFile(ALL_COMMANDS);
