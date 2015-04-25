@@ -19,7 +19,7 @@ void main()
 	//WriteFile();//создать файл
 	
 	ReadAllFile(ALL_COMMANDS);//заполняет массив ALL_COMMANDS[size][ALL_COMMANDS[i][1]]
-	/*
+	
 	//пример для вывода всего содержимого ALL_COMMANDS[][]
 	for (int i = 0; i < SIZE; i++)
 	{
@@ -29,14 +29,16 @@ void main()
 		}
 		cout << endl;
 	}
-*/		
-	//время затраченное на все команды по порядку (покане выполнится следующая не начнется выполняться)
-	int MAXtime = 0;
+	
+	//время затраченное на все команды по порядку (пока не выполнится, следующая не начнется выполняться)
+	
+	int Xtime = 0;
 	for (int i = 0; i < SIZE; i++)
 		for (int j = 2; j < 2 + (1 + 2 * ALL_COMMANDS[i][1]); j++)
-			MAXtime += ALL_COMMANDS[i][j];
-	cout << "MAXtime=" << MAXtime << "taktov \n";
-	//больше MAXtime не должно получиться в результате вычислений алгоритмов
+			Xtime += ALL_COMMANDS[i][j];
+	cout << "Xtime=" << Xtime << "taktov \n";
+	//меньше Xtime не должно получиться в результате вычислений алгоритмов
+	//здесь не учитывается то, что поступившие команды ждут своей очереди
 
 	function_FCFO(ALL_COMMANDS);
 
