@@ -3,20 +3,21 @@
 
 #include <iostream>
 #include <stdio.h>
-/*
-void WriteResult(int Number, int Time)//  для создания результата выполнения...
+
+int ReadSize()
 {
-	FILE* file = fopen("result.txt", "a");
-	fprintf(file, "%d %d\n", Number, Time);
+	int size;
+	FILE* file = fopen("size.txt", "r");
+	fscanf(file, "%d", &size);
 	fclose(file);
+	return size;
 }
-*/
 void ReadAllFile(int **ALL)//для удобства данные переносятся из тхт файла в массив
 {
+	int SIZE = ReadSize();
 	int a, n;
 	FILE* file = fopen("dano.txt", "rt");
 
-		///while (!feof(file))//пока файл дочитан не до конца...
 		for (int i = 0; i < SIZE; i++)
 		{
 			fscanf(file, "%d %d ", &a, &n);
@@ -37,31 +38,3 @@ void ReadAllFile(int **ALL)//для удобства данные переносятся из тхт файла в масс
 }
 
 #endif 
-
-
-//////////////////////////////////////////////////////////
-/*int ReadOneElement(int str)//считывает 2-й элемент строки
-{
-	if (str>SIZE || SIZE <= 0)
-		return 0;
-	else
-	{
-		int a = 0, b = 0;
-		FILE* file = fopen("dano.txt", "rt");
-
-		if ((file = fopen("dano.txt", "rt")) == 0)
-		{
-			//std::cout<<"ERROR!!!";
-			return 0;
-		}
-
-		for (int i = 0; i<str; i++)
-		{
-			fscanf(file, "%d %d \n", &a, &b);
-			//std::cout<<a<<" "<<b<<std::endl;
-		}
-		fclose(file);
-		return b;
-	}
-}
-*/

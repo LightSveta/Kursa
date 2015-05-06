@@ -2,7 +2,7 @@
 
 #include "fcfo.hpp"
 #include "RR.hpp"
-#include "sgn.hpp"
+#include "sjn.hpp"
 #include "srt.hpp"
 
 #include "outmyfile.hpp"
@@ -12,14 +12,17 @@ using namespace std;
 
 
 const int ONE_TAKT = 600;// размер 1 такта в пико-секундах=600при частоте 1.8 ГГерц(подсчеты в листке)
-int ** ALL_COMMANDS = new int *[SIZE];//в этом массиве хранится все о командах
 
 void main()
 {
 	//WriteFile();//создать файл
+
+	int ** ALL_COMMANDS = new int *[ReadSize()];//в этом массиве хранится все о командах
 	
 	ReadAllFile(ALL_COMMANDS);//заполняет массив ALL_COMMANDS[size][ALL_COMMANDS[i][1]]
 	
+	int SIZE = ReadSize();
+
 	//пример для вывода всего содержимого ALL_COMMANDS[][]
 	for (int i = 0; i < SIZE; i++)
 	{
@@ -30,8 +33,6 @@ void main()
 		cout << endl;
 	}
 	
-	//время затраченное на все команды по порядку (пока не выполнится, следующая не начнется выполняться)
-	
 	int Xtime = 0;
 	for (int i = 0; i < SIZE; i++)
 		for (int j = 2; j < 2 + (1 + 2 * ALL_COMMANDS[i][1]); j++)
@@ -40,23 +41,19 @@ void main()
 	//меньше Xtime не должно получиться в результате вычислений алгоритмов
 	//здесь не учитывается то, что поступившие команды ждут своей очереди
 
-	function_FCFO_(ALL_COMMANDS);
+	function_FCFO_(ALL_COMMANDS, SIZE);//
 
-	function_FCFO(ALL_COMMANDS);
+	function_FCFO(ALL_COMMANDS, SIZE);
 
-	ReadAllFile(ALL_COMMANDS);
-	function_RR();
+	function_RR(ALL_COMMANDS, SIZE);
 
-	ReadAllFile(ALL_COMMANDS);
-	function_SJN();
+	function_SJN(ALL_COMMANDS, SIZE);
 	
-	ReadAllFile(ALL_COMMANDS); 
-	function_SRT();
+	function_SRT(ALL_COMMANDS, SIZE);
 
-//----------------------------------
+//---------------------------------
 	for (int i = 0; i < SIZE; i++)
 			delete [] ALL_COMMANDS[i];
 	delete [] ALL_COMMANDS;
-	
-
 }
+//---------------------------------
