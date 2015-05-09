@@ -1,7 +1,7 @@
 #ifndef FCFO_HPP
 #define FCFO_HPP
 
-#include"outmyfile.hpp"
+#include"outmyfile.hpp"//
 
 #include <iostream>///
 using namespace std;///
@@ -10,134 +10,321 @@ using namespace std;///
 /*
 0й столбец= №такта начала команды(по-сути - какая именно команда)
 1й столбец= время простоя+ время выполнения команды+...
-2й -состояние \ флаг
-	0- ещё не поступила\прервана
-	1- завершена
-	2,3,4...-указатель на каком этапе выполнения находится команда
+2й -флаг(позиция в массиве)
+	3,4...-указатель на каком этапе выполнения находится команда
+3й -на каком такте команда перейдет в сосояние готов
+	(пересчитывается по мере надобности)
+	если FCFO[i][2]==0
 */
-void function_FCFO(int **ALL)
+
+void function_FCFO(long unsigned int **ALL, int SIZE)
 {
-	int ** FCFO = new int *[SIZE];
+	FILE* log_FCFO = fopen("log_FCFO.txt", "w");
+
+	cout << "***+++ 34%2 " << 34 % 2 << "  33%2 " << 33 % 2 << "   0%2  " << 0 % 2 << "+++***" << endl;
+	//	   =>  четные%2==0       нечетные%2==1
+
+	long unsigned int ** FCFO = new long unsigned int *[SIZE];
 	for (int j = 0; j < SIZE; j++)
-		FCFO[j] = new int[3];
-/*
- 0  1  2 3 4  5 6
+		FCFO[j] = new long unsigned int[4];
+	/*
+	0  1  2 3 4  5 6
 
-1   2 53 8 11 9 80
-72  1 45 1 24
-131 2 49 2 13 4 35
-215 1 70 2 25
-313 2 105 6 69 9 81
-341 1 28 9 53
-411 0 105
-471 4 37 5 10 3 67 1 94 2 103
-517 2 42 5 56 4 27
-559 3 33 8 83 4 45 9 27
-641 0 93
-717 1 22 8 103
-*/
+	1   2 53 8 11 9 80
+	72  1 45 1 24
+	131 2 49 2 13 4 35
+	215 1 70 2 25
+	313 2 105 6 69 9 81
+	341 1 28 9 53
+	411 0 105
+	471 4 37 5 10 3 67 1 94 2 103
+	517 2 42 5 56 4 27
+	559 3 33 8 83 4 45 9 27
+	641 0 93
+	717 1 22 8 103
+
+	"вывод":
+	четные номера-это время работы
+	нечетные-время прерывания
+	*/
 	int done = 0;//команд завершено
-	int TIMER = 1;//на каком сейчас такте
+	long unsigned int TIMER = 1;//на каком сейчас такте
 
-	int start = ALL[TIMER][0];//такт начала текущей команды
-	int t_pre = 0;//время прерывания 
-	int t = ALL[TIMER][3];//время работы
+	//int start = ALL[TIMER][0];//такт начала текущей команды
+	//int t_pre = 0;//время прерывания 
+	//int t = ALL[TIMER][3];//время работы
 	//i=[0;size];j=[3;(1+2*ALL[i][1])] j=j+2; 
 	// 2<= t <  2 + (1 + 2 * ALL[i][1])
 	// количесво t: 1+ALL[i][1]
 
 	for (int i = 0; i < SIZE; i++)
 	{
-		FCFO[i][0]= ALL[i][0];
+		FCFO[i][0] = ALL[i][0];
 		FCFO[i][1] = 0;
-		FCFO[i][2] = 0;
+		FCFO[i][2] = 2;
+		FCFO[i][3] = 0;
 	}
 
 ///////////////////////////////////
-	
+	int flag;
+	int flag1;
 	while (done < SIZE)
-{
-		for (int i = 0; i<SIZE; i++)
-		{ 
-			if (TIMER >= ALL[i][0] && FCFO[i][2] != 1)//может выполняться и не завершена
-			{
-				for (int j = 2; j < 2 + (1 + 2 * ALL[i][1]); j++)
-				{
-					FCFO[i][1] += ALL[i][j];//для случая: пока текущая команда не завершится
-											//(даже если прервалась), следующая не начнется
-					int befor_timer = TIMER;
-					TIMER += ALL[i][j];
-
-
-					cout << "*TIMER=" << TIMER << "  befor_timer=" << befor_timer << "   for " << FCFO[i][0]
-						<< "   what +=" << ALL[i][j]<<endl;
-
-					int working = i;
-
-					for (int k = 0; k < SIZE; k++)
-					{
-						//if (TIMER <= ALL[i][0])
-						//	break;
-						//else
-						if (TIMER > ALL[k][0] && FCFO[k][2] != 1 && working!= k)//может выполняться и не завершена 
-						{ 
-							if (befor_timer<=ALL[k][0])//если с предыдущего шага готова к работе
-							{
-								
-								FCFO[k][1] += TIMER - FCFO[k][0];//остальные ждут
-								cout << "TIMER=" << TIMER << "  befor_timer=" << befor_timer << "    for" << FCFO[k][0]
-									<< "   what +=" << TIMER - befor_timer << endl;
-							}
-							else
-							{
-								FCFO[k][1] += ALL[i][j];//остальные ждут
-								cout << "TIMER=" << TIMER << "  befor_timer=" << befor_timer << "    for" << FCFO[k][0]
-									<< "   what +=" << ALL[i][j]
-									<< "   from  =" << FCFO[i][0] << endl;
-							}
-
-							
-						}
-					}
-				}
-				FCFO[i][2] = 1;//команда завершилась
-				done++;
-				break;
-			}	
-		}
-
-	
-		/*
-	TIMER += t;
+	{
+		flag = 0;//нет никаких команд
+		flag1 = 0;//есть только заблокированные команды
 	for (int i = 0; i < SIZE; i++)
 	{
-		if (FCFO[i][0] == FCFO[start][0])
-		{
-			FCFO[i][1] += t;//сколько проработала текущая задача
-		}
-		else if (FCFO[i][0]<TIMER)
-		{
-			FCFO[i][1] += t;//сколько ждала задача своей очереди
-		}
-	}*/
-}
+		if (TIMER >= ALL[i][0] && FCFO[i][2] != 0 && TIMER >= FCFO[i][3])//может выполняться(поступила & не завершена &в состоянии готов )
+		{//1
+			if (FCFO[i][2] % 2 == 0 || flag1 == 0)// НЕ прервана(чет)
+				// || есть только заблокированные команды
+			{
+				///2
+				int befor_timer = TIMER;
+				TIMER += ALL[i][FCFO[i][2]];
+				FCFO[i][1] += ALL[i][FCFO[i][2]];//работает
+				flag = 1;
+				//FCFO[i][2]++;//!!!!!!!
+				//состояние ожидания........
+				//if (FCFO[i][2] < 2 + (1 + 2 * ALL[i][1]) && FCFO[i][2] % 2 == 1)//прервана(нечет)
+				//	FCFO[i][3] = TIMER + ALL[i][FCFO[i][2]];//нашли такт, после когторого команда перейдет в состояние готов
+			//	cout << "***TIMER=" << TIMER << "  befor_timer=" << befor_timer << "   for " << FCFO[i][0]
+				//	<< "   what +=" << ALL[i][FCFO[i][2]] << endl;
+				fprintf(log_FCFO, "TIMER=%d\tbefor_timer=%d\tFCFO[%d][0]=%d\tALL[%d][%d]=%d \n",
+								TIMER, befor_timer, i, FCFO[i][0], i, FCFO[i][2], ALL[i][FCFO[i][2]]);
+
+				for (int k = 0; k < SIZE; k++)//проход по массиву(увеличиваем время простаивающим командам(готовым к выполнению))
+				{//3
+					//if (TIMER <= ALL[i][0])//не поступила
+					//break;
+					//else
+					if (TIMER>=ALL[k][0] && FCFO[k][2] != 0 && i != k && TIMER >= FCFO[k][3])//может выполняться и не завершена и не является текущей и закончилось прерывание
+					{////4
+						if (befor_timer <= ALL[k][0] && FCFO[k][2] != 0 )//если с предыдущего шага готова к работе
+							//те. появилась во время работы другой команды
+						{
+							FCFO[k][1] += TIMER - FCFO[k][0];//остальные ждут
+						//	cout << "TIMER=" << TIMER << "  befor_timer=" << befor_timer << "    for" << FCFO[k][0]
+						//		<< "   what +=" << TIMER - FCFO[k][0] << endl;
+							fprintf(log_FCFO, "TIMER=%d\tbefor_timer=%d\tFCFO[%d][0]=%d\t TIMER-FCFO[%d][0]=%d\n",
+								TIMER, befor_timer, i, FCFO[k][0],i ,TIMER - FCFO[k][0]);
+
+
+						}
+						else if (FCFO[k][2] != 0 )
+						{
+							FCFO[k][1] += ALL[i][FCFO[i][2]];//остальные ждут
+							//cout << "TIMER=" << TIMER << "  befor_timer=" << befor_timer << "    for" << FCFO[k][0]
+							//	<< "   what +=" << ALL[i][FCFO[i][2]]
+							//	<< "   from  =" << FCFO[i][0] << endl;
+
+							fprintf(log_FCFO, "TIMER=%d\tbefor_timer=%d\t for FCFO[%d][0]=%d\t  this ALL[%d][%d]=%d from FCFO[%d][0]=%d\n",
+								TIMER, befor_timer, i, FCFO[k][0], k, FCFO[i][2], ALL[i][FCFO[i][2]], i, FCFO[i][0]);
+						}
+					}////4
+
+				}//3
+				FCFO[i][2]++;
+				if (FCFO[i][2] % 2 == 0)
+				{
+					flag1 = 1;
+				}
+
+				if (FCFO[i][2] >= 2 + (1 + 2 * ALL[i][1]))
+				{
+					FCFO[i][2] = 0;
+					done++;
+
+				//	cout << TIMER << " done=" << done << " FCFO[i][0]=" << FCFO[i][0] << " FCFO[i][2]=" << FCFO[i][2] << "\n";
+					fprintf(log_FCFO, "TIMER=%d\t done=%d  FCFO[%d][0]=%d\t   FCFO[%d][2]=%d\n",
+						TIMER, done, i, FCFO[i][0], i, FCFO[i][2] );
+				}
+
+			}
+			///2
+			else
+				if (FCFO[i][2] % 2 == 1)//прервана(нечет)
+				{
+				FCFO[i][3] = TIMER + ALL[i][FCFO[i][2]];//нашли такт, после когторого команда перейдет в состояние готов
+				FCFO[i][2]++;
+				flag1 = 1;
+				}
+		}//1
+	}
+	if (flag == 0)TIMER++;
+	}
+	
 /////////////////////////////////////////////
 	cout << "\n";
-int timeFCFO = 0;//общее  время всех команд
+	long unsigned int timeFCFO = 0;//общее  время всех команд
 
-for (int i = 0; i < SIZE; i++)
-{
-	cout << FCFO[i][0] << " ";
-	cout << FCFO[i][1] << "\n";
-}
-for (int i = 0; i < SIZE; i++)
-	timeFCFO += FCFO[i][1];
-cout << "timeFCFO=" << timeFCFO << "taktov \n";
+	//
 
+	/*
+	for (int i = 1; i < SIZE; i++)
+	{
+		FCFO[i][1]--;
+	}
+	*/
+
+	//
+	
+	for (int i = 0; i < SIZE; i++)
+	{
+	cout << FCFO[i][0] << "\t";
+	cout << FCFO[i][1] << "\t";
+	cout << FCFO[i][2] << "\t";
+	cout << FCFO[i][3] << "\n";
+	}
+	
+	for (int i = 0; i < SIZE; i++)
+		timeFCFO += FCFO[i][1];
+	cout << "timeFCFO=" << timeFCFO << "taktov \n";
+
+
+////
+	FILE* file = fopen("FCFO.txt", "wt");
+	{
+		fprintf(file, "Time FCFO: %d\n\nTime: \n", timeFCFO);
+		for (int i = 0; i < SIZE; i++)
+			fprintf(file, "%d\t%d\n", FCFO[i][0], FCFO[i][1]);
+	}
+	fclose(file);
+////
 //--------------------------------------------
 	for (int j = 0; j < SIZE; j++)
 		delete[] FCFO[j];
 	delete[] FCFO;
 //--------------------------------------------
+	fclose(log_FCFO);
+}
+
+//++++++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++++++
+//++++++++++++++++++++++++++++++++++++++++++++++++
+
+void function_FCFO_(long unsigned int **ALL, int SIZE)
+{
+	/* несколько видоизменненный алгоритм function_FCFO:
+	первая команда пришла и выполняется до своего завершения
+	(даже если прервалась,то все остальные будут ждать ее завершения)
+	*/
+
+	long unsigned int ** FCFO = new long unsigned int *[SIZE];
+	for (int j = 0; j < SIZE; j++)
+		FCFO[j] = new long unsigned int[3];
+
+	/*
+	 0  1  2 3 4  5 6
+
+	 1   2 53 8 11 9 80
+	 72  1 45 1 24
+	 131 2 49 2 13 4 35
+	 215 1 70 2 25
+	 313 2 105 6 69 9 81
+	 341 1 28 9 53
+	 411 0 105
+	 471 4 37 5 10 3 67 1 94 2 103
+	 517 2 42 5 56 4 27
+	 559 3 33 8 83 4 45 9 27
+	 641 0 93
+	 717 1 22 8 103
+	 */
+	int done = 0;//команд завершено
+	long unsigned int TIMER = 1;//на каком сейчас такте
+
+	long unsigned int start = ALL[TIMER][0];//такт начала текущей команды
+	long unsigned int t_pre = 0;//время прерывания 
+	long unsigned int t = ALL[TIMER][3];//время работы
+	//i=[0;size];j=[3;(1+2*ALL[i][1])] j=j+2; 
+	// 2<= t <  2 + (1 + 2 * ALL[i][1])
+	// количесво t: 1+ALL[i][1]
+
+	for (int i = 0; i < SIZE; i++)
+	{
+		FCFO[i][0] = ALL[i][0];
+		FCFO[i][1] = 0;
+		FCFO[i][2] = 0;
+	}
+
+	///////////////////////////////////
+int	flag = 0;
+	while (done < SIZE)
+	{
+		flag = 0;
+		for (int i = 0; i < SIZE; i++)
+		{
+			if (TIMER >= ALL[i][0] && FCFO[i][2] != 1)//может выполняться и не завершена
+			{
+				flag = 1;
+				for (long unsigned int j = 2; j < 2 + (1 + 2 * ALL[i][1]); j++)
+				{
+					FCFO[i][1] += ALL[i][j];//для случая: пока текущая команда не завершится
+					//(даже если прервалась), следующая не начнется
+					long unsigned int befor_timer = TIMER;
+					TIMER += ALL[i][j];
+
+
+					//cout << "***TIMER=" << TIMER << "  befor_timer=" << befor_timer << "   for " << FCFO[i][0]
+					//	<< "   what +=" << ALL[i][j] << endl;
+
+					int working = i;
+
+					for (int k = 0; k < SIZE; k++)
+					{
+						if (TIMER <= ALL[i][0])
+							break;
+						else
+							if (TIMER > ALL[k][0] && FCFO[k][2] != 1 && working != k)//может выполняться и не завершена 
+							{
+							if (befor_timer <= ALL[k][0])//если с предыдущего шага готова к работе
+								{
+
+								FCFO[k][1] += TIMER - FCFO[k][0];//остальные ждут
+								//cout << "TIMER=" << TIMER << "  befor_timer=" << befor_timer << "    for" << FCFO[k][0]
+								//	<< "   what +=" << TIMER - befor_timer << endl;
+								}
+							else
+								{
+								FCFO[k][1] += ALL[i][j];//остальные ждут
+								//cout << "TIMER=" << TIMER << "  befor_timer=" << befor_timer << "    for" << FCFO[k][0]
+								//	<< "   what +=" << ALL[i][j]
+								//	<< "   from  =" << FCFO[i][0] << endl;
+								}
+							}
+					}
+				}
+				FCFO[i][2] = 1;//команда завершилась
+				done++;
+				break;
+			}
+		}
+		if (flag == 0)TIMER++;//если нет никаких задач готовых к выполнению - простой комп. 
+	}
+	/////////////////////////////////////////////
+
+	long unsigned int timeFCFO = 0;//общее  время всех команд
+
+	//
+	for (int i = 1; i < SIZE; i++)
+	{
+		FCFO[i][1]--;
+	}
+
+	for (int i = 0; i < SIZE; i++)
+		timeFCFO += FCFO[i][1];
+	////
+	FILE* file = fopen("FCFO_.txt", "wt");
+	{
+		fprintf(file, "Time FCFO_: %d\n\nTime: \n", timeFCFO);
+		for (int i = 0; i < SIZE; i++)
+			fprintf(file, "%d\t%d\n", FCFO[i][0], FCFO[i][1]);
+	}
+	fclose(file);
+	////
+
+	for (int j = 0; j < SIZE; j++)
+		delete[] FCFO[j];
+	delete[] FCFO;
 }
 #endif 
