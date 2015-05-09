@@ -2,7 +2,7 @@
 #define SJN_HPP
 
 
-void function_SJN(int **ALL, int SIZE)
+void function_SJN(long unsigned int **ALL, int SIZE)
 {
 	/*
 	Результатом этой функции является файлы SJN.txt и log_SJN.txt.
@@ -13,7 +13,7 @@ void function_SJN(int **ALL, int SIZE)
 	1-й столбец - это №такта начала задачи
 	2-й столбец - это время с момента поступления задачи до момента её завершения
 
-	В файле log_SJN.txt выводятся поэтапные вычисления времени, затраченного каждой хадачей
+	В файле log_SJN.txt выводятся поэтапные вычисления времени, затраченного каждой задачей
 	*/
 }
 #endif 

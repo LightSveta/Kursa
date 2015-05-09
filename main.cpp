@@ -15,27 +15,29 @@ const int ONE_TAKT = 600;// размер 1 такта в пико-секундах=600при частоте 1.8 √√
 
 void main()
 {
-	//WriteFile();//создать файл
-
-	int ** ALL_COMMANDS = new int *[ReadSize()];//в этом массиве хранитс€ все о командах
+	WriteFile();//создать файл
+	
+	long unsigned int ** ALL_COMMANDS = new long unsigned int *[ReadSize()];//в этом массиве хранитс€ все о командах
 	
 	ReadAllFile(ALL_COMMANDS);//заполн€ет массив ALL_COMMANDS[size][ALL_COMMANDS[i][1]]
 	
 	int SIZE = ReadSize();
 
+	/*
 	//пример дл€ вывода всего содержимого ALL_COMMANDS[][]
 	for (int i = 0; i < SIZE; i++)
 	{
-		for (int j = 0; j < 2+(1+2*ALL_COMMANDS[i][1]); j++)
+		for (long unsigned int j = 0; j < 2 + (1 + 2 * ALL_COMMANDS[i][1]); j++)
 		{
 			cout << ALL_COMMANDS[i][j] << " ";
 		}
 		cout << endl;
 	}
-	
-	int Xtime = 0;
+	*/
+
+	long unsigned int Xtime = 0;
 	for (int i = 0; i < SIZE; i++)
-		for (int j = 2; j < 2 + (1 + 2 * ALL_COMMANDS[i][1]); j++)
+		for (long unsigned int j = 2; j < 2 + (1 + 2 * ALL_COMMANDS[i][1]); j++)
 			Xtime += ALL_COMMANDS[i][j];
 	cout << "Xtime=" << Xtime << "taktov \n";
 	//меньше Xtime не должно получитьс€ в результате вычислений алгоритмов
@@ -55,5 +57,6 @@ void main()
 	for (int i = 0; i < SIZE; i++)
 			delete [] ALL_COMMANDS[i];
 	delete [] ALL_COMMANDS;
+	
 }
 //---------------------------------

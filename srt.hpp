@@ -2,7 +2,7 @@
 #define SRT_HPP
 
 
-void function_SRT(int **ALL, int SIZE)
+void function_SRT(long unsigned int **ALL, int SIZE)
 {
 	/*
 	Результатом этой функции является файлы SRT.txt и log_SRT.txt.
@@ -13,7 +13,7 @@ void function_SRT(int **ALL, int SIZE)
 	1-й столбец - это №такта начала задачи
 	2-й столбец - это время с момента поступления задачи до момента её завершения
 
-	В файле log_SRT.txt выводятся поэтапные вычисления времени, затраченного каждой хадачей
+	В файле log_SRT.txt выводятся поэтапные вычисления времени, затраченного каждой задачей
 	*/
 }
 #endif 

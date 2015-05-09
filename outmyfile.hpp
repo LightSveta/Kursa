@@ -12,20 +12,20 @@ int ReadSize()
 	fclose(file);
 	return size;
 }
-void ReadAllFile(int **ALL)//для удобства данные переносятся из тхт файла в массив
+void ReadAllFile(long unsigned int **ALL)//для удобства данные переносятся из тхт файла в массив
 {
 	int SIZE = ReadSize();
-	int a, n;
+	long unsigned int a, n;
 	FILE* file = fopen("dano.txt", "rt");
 
 		for (int i = 0; i < SIZE; i++)
 		{
 			fscanf(file, "%d %d ", &a, &n);
 			//std::cout << a << " " << n << " ";
-		ALL [i]= new int [2+(1+2*n)];
+			ALL[i] = new long unsigned int[2 + (1 + 2 * n)];
 			ALL[i][0] = a;
 			ALL[i][1] = n;
-			for (int j = 2; j <2+(1+2*n); j++)
+			for (long unsigned int j = 2; j <2 + (1 + 2 * n); j++)
 			{
 				fscanf(file, "%d ", &a);
 				ALL[i][j] = a;
