@@ -15,7 +15,7 @@ const int ONE_TAKT = 600;// размер 1 такта в пико-секундах=600при частоте 1.8 ГГ
 
 void main()
 {
-	WriteFile();//создать файл
+	//WriteFile();//создать файл
 	
 	long unsigned int ** ALL_COMMANDS = new long unsigned int *[ReadSize()];//в этом массиве хранится все о командах
 	
@@ -23,7 +23,7 @@ void main()
 	
 	int SIZE = ReadSize();
 
-	/*
+	
 	//пример для вывода всего содержимого ALL_COMMANDS[][]
 	for (int i = 0; i < SIZE; i++)
 	{
@@ -33,7 +33,7 @@ void main()
 		}
 		cout << endl;
 	}
-	*/
+	
 
 	long unsigned int Xtime = 0;
 	for (int i = 0; i < SIZE; i++)
