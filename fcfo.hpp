@@ -14,7 +14,7 @@ using namespace std;///
 	если FCFO[i][2]==0 - то завершена
 */
 
-void function_FCFO(long unsigned int **ALL, int SIZE)
+void function_FCFO(long unsigned int **ALL, int SIZE)//преределать в очередь
 {
 	FILE* log_FCFO = fopen("log_FCFO.txt", "w");
 	//cout << "***+++ 34%2 " << 34 % 2 << "  33%2 " << 33 % 2 << "   0%2  " << 0 % 2 << "+++***" << endl;
@@ -68,7 +68,7 @@ void function_FCFO(long unsigned int **ALL, int SIZE)
 	{
 		flag = 0;//нет никаких команд
 		flag1 = 0;//есть только заблокированные команды
-		int befor_TIME;
+		long unsigned int  befor_TIME;
 		for (int i = 0; i < SIZE; i++)
 		{
 			if (flag2 == 1) i = 0;
@@ -178,18 +178,7 @@ void function_FCFO(long unsigned int **ALL, int SIZE)
 /////////////////////////////////////////////
 	cout << "\n";
 	long unsigned int timeFCFO = 0;//общее  время всех команд
-
-	//
-
 	/*
-	for (int i = 1; i < SIZE; i++)
-	{
-		FCFO[i][1]--;
-	}
-	*/
-
-	//
-	
 	for (int i = 0; i < SIZE; i++)
 	{
 	cout << FCFO[i][0] << "\t";
@@ -197,7 +186,7 @@ void function_FCFO(long unsigned int **ALL, int SIZE)
 	cout << FCFO[i][2] << "\t";
 	cout << FCFO[i][3] << "\n";
 	}
-	
+	*/
 	for (int i = 0; i < SIZE; i++)
 		timeFCFO += FCFO[i][1];
 	cout << "timeFCFO=" << timeFCFO << "taktov \n";
