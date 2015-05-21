@@ -87,7 +87,7 @@ void function_FCFS(long unsigned int **ALL, int SIZE)
 
 			fprintf(log_FCFS, "Список:\n");
 			for (int k = 0; k < waiting; k++)
-				fprintf(log_FCFS, "     %d) задача№%d, такт на котором поступила:%d (%d)\n",k+1 , waiting_list[k], FCFS[waiting_list[k]][0], ALL[waiting_list[k]][0]);
+				fprintf(log_FCFS, "     %d) задача№%d, такт на котором поступила:%d (%d)\n", k + 1, waiting_list[k], FCFS[waiting_list[k]][0], ALL[waiting_list[k]][0]);
 
 			// i-номер задачи в массиве ALL,
 			//требующей меньше всего времени на выполнение,
@@ -110,9 +110,9 @@ void function_FCFS(long unsigned int **ALL, int SIZE)
 
 						for (int j = 0; j < waiting; j++)
 							if (waiting_list[j] == k)
-							flag_copy++;
+								flag_copy++;
 
-						if (flag_copy==0)//если такой еще нет
+						if (flag_copy == 0)//если такой еще нет
 						{
 							waiting_list[waiting] = k; //добавили в конец
 							waiting++;
@@ -137,7 +137,7 @@ void function_FCFS(long unsigned int **ALL, int SIZE)
 							//те. появилась во время работы другой команды
 						{
 							FCFS[k][1] += TIME - FCFS[k][0];//остальные ждут
-								fprintf(log_FCFS, "ожидающие(1тип): текущий такт(TIME)=%d\tbefor_TIME=%d\tFCFS[%d][0]=%d\t TIME-FCFS[%d][0]=%d\n",
+							fprintf(log_FCFS, "ожидающие(1тип): текущий такт(TIME)=%d\tbefor_TIME=%d\tFCFS[%d][0]=%d\t TIME-FCFS[%d][0]=%d\n",
 								TIME, befor_TIME, i, FCFS[k][0], i, TIME - FCFS[k][0]);
 							fprintf(log_FCFS, "(т.е  задача №%d , поступившая на %d такте,  ждет %d тактов) \n",
 								k, FCFS[k][0], TIME - FCFS[k][0]);
@@ -168,14 +168,14 @@ void function_FCFS(long unsigned int **ALL, int SIZE)
 					FCFS[i][2] = 0;
 
 					//так как  задача завершена, то yбираем из очереди
-					for (int l = 0; l < waiting-1; l++)
-						 waiting_list[l]= waiting_list[l + 1];
+					for (int l = 0; l < waiting - 1; l++)
+						waiting_list[l] = waiting_list[l + 1];
 					waiting--;//на 1 задачу стало меньше
 					//сдвинули все элементы влево на 1(затерли номер завершившейся задачи)
 
 					done++;
 					fprintf(log_FCFS, "подсчет закончивших задач: текущий такт(TIME)=%d\n завершившихся(done)=%d штук (из %d); FCFS[%d][0]=%d -  завершена\t    FCFS[%d][2]=%d\n",
-						TIME, done,SIZE , i, FCFS[i][0], i, FCFS[i][2]);
+						TIME, done, SIZE, i, FCFS[i][0], i, FCFS[i][2]);
 					fprintf(log_FCFS, "(т.е завершена  задача №%d , поступившая на %d такте) \n",
 						i, FCFS[i][0]);
 					fprintf(log_FCFS, "			FCFS[%d][3]=%d \n",
@@ -205,7 +205,7 @@ void function_FCFS(long unsigned int **ALL, int SIZE)
 		}//5
 		else if (waiting == 0)
 		{
-			TIME++; 
+			TIME++;
 			fprintf(log_FCFS, "работа в холостую. задач в состоянии готов или  новых - нет, Текущий такт = %d \n", TIME);
 			//+ в этот такт ждут уже поступившие задачи:
 			for (int k = 0; k < SIZE; k++)//проход по массиву(увеличиваем время простаивающим командам(готовым к выполнению))
