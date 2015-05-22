@@ -2,11 +2,14 @@
 #define SRT_HPP
 
 #include <time.h>
+#include "outmyfile.hpp"
 
 using namespace std;///
 
-void function_SRT(long unsigned int **ALL, int SIZE)
+void function_SRT(int SIZE)
 {
+	long unsigned int ** ALL = new long unsigned int *[SIZE];
+	ReadAllFile(ALL);
 
 	FILE* log_SRT = fopen("log_SRT.txt", "w");
 
@@ -49,6 +52,7 @@ void function_SRT(long unsigned int **ALL, int SIZE)
 
 	int ready_box_size = 0;//постоянно меняем
 	int SRT_box_size = SIZE;//для наглядности
+	int allow_flag;
 
 	///////////////////////////////////
 //	int flag;
@@ -97,14 +101,20 @@ void function_SRT(long unsigned int **ALL, int SIZE)
 			if (SRT[i][2] % 2 == 0)// НЕ прервана(чет)
 			{///2
 				befor_TIME = TIME;
-				TIME += ALL[i][SRT[i][2]];
-				SRT[i][1] += ALL[i][SRT[i][2]];//работает
-				SRT_box[i] -= ALL[i][SRT[i][2]];//так как она проработала, то ее оставшееся время работы уменьшится
+				TIME ++;
+				SRT[i][1] ++;//работает
+				SRT_box[i] -= 1;//так как она проработала, то ее оставшееся время работы уменьшится
 
 				fprintf(log_SRT, "*текущий такт(TIME)=%d\t befor_TIME=%d\tSRT[%d][0]=%d\tALL[%d][%d]=%d \n",
 					TIME, befor_TIME, i, SRT[i][0], i, SRT[i][2], ALL[i][SRT[i][2]]);
-				fprintf(log_SRT, "---------SRT[%d][3]=%d\n",
-					i, SRT[i][3]);
+				fprintf(log_SRT, "работает задача №%d , поступившая на %d такте,  работает 1 такт (из необходимых %d ) \n",
+					i, SRT[i][0], ALL[i][SRT[i][2]]);
+
+				
+					ALL[i][SRT[i][2]] -= 1;//потом продолжит работу с тогоже места
+					fprintf(log_SRT, "задача №%d , поступившая на %d такте, потом продолжит работу \n",
+						i, SRT[i][0]);
+				
 
 				for (int k = 0; k < SIZE; k++)//проход по массиву(увеличиваем время простаивающим командам(готовым к выполнению))
 				{//3
@@ -129,7 +139,9 @@ void function_SRT(long unsigned int **ALL, int SIZE)
 						}
 					}////4
 				}//3
-				SRT[i][2]++;
+				//SRT[i][2]++;
+				if (ALL[i][SRT[i][2]]==0)//завершена одна команд задачи
+					SRT[i][2]++;
 
 				if (SRT[i][2] >= 2 + (1 + 2 * ALL[i][1]))
 				{
